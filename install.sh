@@ -129,6 +129,21 @@ install_packages() {
     # Verify installation
     if command -v lazygit &> /dev/null; then
         success "lazygit installed successfully: $(lazygit --version)"
+        # Create alias for lg
+        if [[ "$SHELL" == *"zsh"* ]]; then
+            shell_config="$HOME/.zshrc"
+        elif [[ "$SHELL" == *"bash"* ]]; then
+            shell_config="$HOME/.bashrc"
+        fi
+
+        if [[ -n "$shell_config" ]]; then
+            if ! grep -q "alias lg=" "$shell_config" 2>/dev/null; then
+                echo "alias lg='lazygit'" >> "$shell_config"
+                success "Added 'lg' alias for lazygit to $shell_config"
+            else
+                success "'lg' alias already exists in $shell_config"
+            fi
+        fi
     else
         error "Failed to install lazygit"
         exit 1
