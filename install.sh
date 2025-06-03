@@ -43,6 +43,23 @@ detect_os() {
     fi
 }
 
+# Get Homebrew installation path
+get_brew_path() {
+    if [[ "$(detect_os)" == "macos" ]]; then
+        echo "/opt/homebrew"
+    else
+        # Check both possible Linux locations
+        if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+            echo "/home/linuxbrew/.linuxbrew"
+        elif [ -d "/linuxbrew/.linuxbrew" ]; then
+            echo "/linuxbrew/.linuxbrew"
+        else
+            # Default to the standard location
+            echo "/home/linuxbrew/.linuxbrew"
+        fi
+    fi
+}
+
 # Install Homebrew (works on both Linux and macOS)
 install_homebrew() {
     if command -v brew &> /dev/null; then
@@ -68,11 +85,8 @@ install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     
     # Add Homebrew to PATH for this session
-    if [[ "$(detect_os)" == "macos" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    else
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
+    local brew_path="$(get_brew_path)"
+    eval "$($brew_path/bin/brew shellenv)"
     
     # Verify installation
     if command -v brew &> /dev/null; then
@@ -95,7 +109,13 @@ install_packages() {
     # Install from Brewfile if it exists, otherwise install lazygit directly
     if [ -f "$script_dir/Brewfile" ]; then
         info "Installing packages from Brewfile..."
-        brew bundle --file="$script_dir/Brewfile"
+        if ! brew bundle --file="$script_dir/Brewfile"; then
+            warning "brew bundle failed, falling back to direct installation"
+            if ! command -v lazygit &> /dev/null; then
+                info "Installing lazygit directly..."
+                brew install lazygit
+            fi
+        fi
     else
         # Fallback: install lazygit directly
         if ! command -v lazygit &> /dev/null; then
@@ -128,12 +148,8 @@ setup_shell_env() {
     
     if [[ -n "$shell_config" ]]; then
         # Add Homebrew to PATH in shell config
-        local brew_env_line=""
-        if [[ "$(detect_os)" == "macos" ]]; then
-            brew_env_line='eval "$(/opt/homebrew/bin/brew shellenv)"'
-        else
-            brew_env_line='eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
-        fi
+        local brew_path="$(get_brew_path)"
+        local brew_env_line="eval \"\$($brew_path/bin/brew shellenv)\""
         
         if ! grep -q "brew shellenv" "$shell_config" 2>/dev/null; then
             echo "" >> "$shell_config"

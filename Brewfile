@@ -1,9 +1,6 @@
 # Homebrew Bundle file
 # Install with: brew bundle
 
-# Taps
-tap "homebrew/bundle"
-
 # Development tools
 brew "lazygit"
 
