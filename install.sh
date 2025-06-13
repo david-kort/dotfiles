@@ -200,6 +200,13 @@ link_configs() {
     # Add more config linking here as you expand your dotfiles
 }
 
+install_aliases() {
+    # Source aliases
+    if [ -f "$HOME/.config/shell/aliases" ]; then
+        source "$HOME/.config/shell/aliases"
+    fi
+    }
+
 # Main installation function
 main() {
     info "Starting dotfiles installation..."

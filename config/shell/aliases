@@ -1,0 +1,28 @@
+# Source git aliases
+alias g='git'
+alias gfo='git fetch origin'
+alias gfc='git branch | grep -v "^\*" | fzf --height=20% --reverse --info=inline | xargs git checkout'
+alias gs='git status --short --branch'
+alias ga='git add'
+alias gc='git commit'
+alias gcv='git commit --no-verify'
+alias gp='git push'
+alias gpv='git push --no-verify'
+alias gll='git log --oneline'
+
+# Git aliases
+git config --global alias.sw 'switch'
+git config --global alias.unstage reset HEAD --
+git config --global alias.last 'log -1 HEAD'
+git config --global alias.r rebase --interactive --autostash
+git config --global alias.rc 'rebase --continue'
+git config --global alias.undo reset HEAD~
+git config --global alias.aliases config --get-regex '^alias\.'
+git config --global alias.orphaned !git branch -vv | grep -v "\[.*\]" | awk '{print $1}'
+
+# Alert alias for long-running commands
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# General aliases
+alias ll='ls -la'
+alias la='ls -A'
