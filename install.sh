@@ -216,6 +216,7 @@ main() {
     install_packages
     link_configs
     setup_shell_env
+    install_aliases
     
     success "Dotfiles installation completed!"
     info "Please restart your shell or run: source ~/.zshrc"

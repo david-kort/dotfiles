@@ -4,6 +4,9 @@
 # Development tools
 brew "lazygit"
 brew "git-delta"
+brew "posting"
+brew "fzf"
+
 
 # Add more packages here as you expand your dotfiles
 # brew "fzf"
